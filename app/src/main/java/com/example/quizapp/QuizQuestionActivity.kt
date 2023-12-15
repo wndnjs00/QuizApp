@@ -1,5 +1,6 @@
 package com.example.quizapp
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
@@ -11,8 +12,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
-
 
 
 
@@ -24,6 +25,9 @@ class QuizQuestionActivity : AppCompatActivity(), OnClickListener{
     private var mQuestionsList : ArrayList<Question>? = null
     //어떤 옵션을 선택했는지 확인하기위해
     private var mSelectedOptionPosition : Int = 0
+
+    private var mUserName :String? = null   //사용자이름
+    private var mCorrectAnswers : Int = 0   //정답개수
 
     private var tvQuestion : TextView? = null
     private var ivImage : ImageView? = null
@@ -65,6 +69,9 @@ class QuizQuestionActivity : AppCompatActivity(), OnClickListener{
 
         setQuestion()
 
+        // MainActivity에서 보냈던 USER_NAME을 받아옴
+        mUserName = intent.getStringExtra(Constants.USER_NAME)
+
     }
 
     private fun setQuestion() {
@@ -96,6 +103,9 @@ class QuizQuestionActivity : AppCompatActivity(), OnClickListener{
         }else{
             btnSubmit?.text = "제출하기"
         }
+
+        // 옵션값 리셋(기본값으로)
+        defaultOptionsView()
     }
 
 
@@ -177,6 +187,51 @@ class QuizQuestionActivity : AppCompatActivity(), OnClickListener{
             R.id.btn_submit -> {
                 if (mSelectedOptionPosition == 0){   //선택한 옵션의 위치를 기본값인 0으로 두고 (현재위치)
                     mCurrentPosition++               //mCurrentPosition++ 으로 현재위치에 1을 더해서 다음질문으로 넘어가게
+
+                    //다음질문으로
+                    when{
+                        mCurrentPosition <= mQuestionsList!!.size -> {
+                           setQuestion()
+                        }
+                        else -> {   // 다음질문이 없을때 (마지막 질문일때)
+                            val intent = Intent(this, ResultActivity::class.java)
+                            // ResultActivity로 USER_NAME, CORRECT_ANSWERS, TOTAL_QUESTIONS 값들을 보냄(이름,맞힌질문의개수,전체질문의개수)
+                            intent.putExtra(Constants.USER_NAME, mUserName)
+                            intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswers)
+                            intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionsList?.size)
+                            startActivity(intent)
+                            finish()
+
+                        }
+                    }
+                }else{
+                    val question = mQuestionsList?.get(mCurrentPosition -1)
+
+                    //정답을 선택했는지 아닌지 if문을 통해 확인
+                    //정답이 아닌걸 선택했다면
+                    if(question!!.correctAnswer != mSelectedOptionPosition){
+                        // if문으로 선택한 옵션에 빨간배경표시
+                        answerView(mSelectedOptionPosition, R.drawable.wrong_option)
+
+                        // 정답을 선택했다면, 정답개수 증가
+                    }else{
+                        mCorrectAnswers++
+                    }
+                    // 동시에 선택한 옵션을 초록색으로 바꿈
+                    // 정답은 정답을 선택한경우든지 오답을 선택한경우든지 무조건 표시
+                    answerView(question.correctAnswer, R.drawable.correct_option)
+
+
+                    //다음질문으로 넘어가게
+                    //mCurrentPosition이 질문의개수와 같다면(마지막질문이라면)
+                    if(mCurrentPosition == mQuestionsList!!.size){
+                        btnSubmit?.text = "FINISH"
+                    }else{  //마지막 질문이 아니라면
+                        btnSubmit?.text = "다음질문"
+                    }
+
+                    //선택한 옵션의 위치를 0으로 돌아가게 (이걸 안하면 지금 선택한 옵션이 그대로 남아서 에러뜸)
+                    mSelectedOptionPosition = 0
                 }
 
             }

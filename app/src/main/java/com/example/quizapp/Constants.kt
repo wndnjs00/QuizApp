@@ -4,6 +4,12 @@ package com.example.quizapp
 // 실제 들어갈 데이터값 만들기
 object Constants {
 
+    // activity_result에 해당하는 정보
+    const val USER_NAME : String = "user_name"              // username
+    const val TOTAL_QUESTIONS : String = "total_questions"  // 전체질문의 개수
+    const val CORRECT_ANSWERS : String = "correct_answers"  // 맞힌질문의 개수
+
+
     //이 함수를 실행시켰을때 Question에 담긴 데이터들을 전부 가져오도록
     fun getQuestions() : ArrayList<Question>{
         //questionsList에 각각의 질문에 해당하는 값이 담겨있음
