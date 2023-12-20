@@ -69,6 +69,7 @@ class QuizQuestionActivity : AppCompatActivity(), OnClickListener{
 
         setQuestion()
 
+        //추가!!
         // MainActivity에서 보냈던 USER_NAME을 받아옴
         mUserName = intent.getStringExtra(Constants.USER_NAME)
 
@@ -182,8 +183,8 @@ class QuizQuestionActivity : AppCompatActivity(), OnClickListener{
             }
 
 
+
             // btn_submit을 눌렀을때 실행할옵션
-            // 옵션 누르고 제출버튼 눌렀을때 정답인지 아닌지에 따라서 색상 달라지게
             R.id.btn_submit -> {
                 if (mSelectedOptionPosition == 0){   //선택한 옵션의 위치를 기본값인 0으로 두고 (현재위치)
                     mCurrentPosition++               //mCurrentPosition++ 으로 현재위치에 1을 더해서 다음질문으로 넘어가게
@@ -195,7 +196,7 @@ class QuizQuestionActivity : AppCompatActivity(), OnClickListener{
                         }
                         else -> {   // 다음질문이 없을때 (마지막 질문일때)
                             val intent = Intent(this, ResultActivity::class.java)
-                            // ResultActivity로 USER_NAME, CORRECT_ANSWERS, TOTAL_QUESTIONS 값들을 보냄(이름,맞힌질문의개수,전체질문의개수)
+                            // putExtra를 사용해서 ResultActivity로 USER_NAME, CORRECT_ANSWERS, TOTAL_QUESTIONS 값들을 보냄(이름,맞힌질문의개수,전체질문의개수)
                             intent.putExtra(Constants.USER_NAME, mUserName)
                             intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswers)
                             intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionsList?.size)
@@ -218,11 +219,10 @@ class QuizQuestionActivity : AppCompatActivity(), OnClickListener{
                         mCorrectAnswers++
                     }
                     // 동시에 선택한 옵션을 초록색으로 바꿈
-                    // 정답은 정답을 선택한경우든지 오답을 선택한경우든지 무조건 표시
+                    // 정답은 정답을 선택한경우든지 오답을 선택한경우든지 무조건 표시하는거기때문에 else문 나와서 작성
                     answerView(question.correctAnswer, R.drawable.correct_option)
 
 
-                    //다음질문으로 넘어가게
                     //mCurrentPosition이 질문의개수와 같다면(마지막질문이라면)
                     if(mCurrentPosition == mQuestionsList!!.size){
                         btnSubmit?.text = "FINISH"
@@ -233,6 +233,7 @@ class QuizQuestionActivity : AppCompatActivity(), OnClickListener{
                     //선택한 옵션의 위치를 0으로 돌아가게 (이걸 안하면 지금 선택한 옵션이 그대로 남아서 에러뜸)
                     mSelectedOptionPosition = 0
                 }
+
 
             }
         }
